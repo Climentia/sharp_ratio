@@ -3,6 +3,7 @@ import re
 import os
 import pandas as pd
 import itertools
+# analyzeで入力した期間を入力
 start_year = 2015
 end_year = 2020
 start_date = "01-01"
@@ -37,14 +38,6 @@ def read_file(path):
         df = df.resample('AS').first()
         df['change'] = df["Open2"].pct_change()
         print(df['change'].std())
-    elif "JPYUSD=X.csv" in path:
-        df = pd.read_csv(path, index_col=['Date'], parse_dates=['Date'])
-        df = df[start:end]
-        df['count'] = pd.to_datetime(df.index.values)
-        df['Open2'] = df["Open"]
-        df = df.resample('AS').first()
-        df['change'] = df["Open2"].pct_change()
-        print(df['changes'].std())
     else:
         df = pd.read_csv(path, index_col=['Date'], parse_dates=['Date'])
         df = df[start:end]
@@ -69,24 +62,17 @@ for path in stock_path_list:
     id1 = id0.lstrip("\\")
     id = id1.rstrip(".csv")
     stock_name.append(id)
-# dfObj = pd.DataFrame(columns=stock_name)
 df00 = read_file(stock_path_list[0])
-# print(dfObj)
 start_id = stock_name[0]
 df00.columns = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'count', 'Open2', start_id]
 df0 = df00[start_id]
-# permutation_stock_list = list(itertools.product(stock_path_list, repeat=2))
 for path_num in range(1, stock_path_list_len):
     df1 = read_file(stock_path_list[path_num])
-    # print(df1)
     id0 = stock_path_list[path_num].lstrip("./data/")
     id1 = id0.lstrip("\\")
     id = id1.rstrip(".csv")
     df1.columns = ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume', 'count', 'Open2', id]
     df2 = df1[id]
-    # df2 = df1.rename(columns={id: "Open2"})
-    # print(df1)
-    # df2 =
     df0 = pd.concat([df0, df2], axis=1)
 
 df0 = df0.dropna()
